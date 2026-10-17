@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Registre RGPD – FEMAS HDF</title>
+<meta name="robots" content="noindex">
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1d2433;--muted:#5b6475;--line:#dde1e8;--brand:#1f4e79;--brand-ink:#fff;--accent:#e8f0f8;--warn:#fce4d6;--warn-ink:#8a3b12;--ok:#e3f4e8;--ok-ink:#1d6b34;--danger:#b42318;--focus:#2f7fd1}
+@media (prefers-color-scheme:dark){:root{--bg:#12161d;--card:#1a2029;--ink:#e6e9ef;--muted:#a3abb9;--line:#2c3440;--brand:#4b8fd1;--brand-ink:#0d1117;--accent:#1f2b3a;--warn:#3a2418;--warn-ink:#f2b38f;--ok:#17301f;--ok-ink:#8fd8a4;--danger:#f08b80;--focus:#7db6f0}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--brand);color:var(--brand-ink);padding:24px 16px}
+header .in,main{max-width:960px;margin:0 auto}
+header h1{margin:0 0 4px;font-size:1.5rem}
+header p{margin:0;opacity:.9}
+main{padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:18px;margin:0 0 16px}
+.card h2{margin:0 0 12px;font-size:1.15rem}
+.notice{background:var(--ok);color:var(--ok-ink);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:.95rem}
+.notice.warn{background:var(--warn);color:var(--warn-ink)}
+label.q{display:block;font-weight:600;margin:14px 0 4px}
+.req{color:var(--danger)}
+.help{color:var(--muted);font-size:.88rem;margin:0 0 6px}
+input[type=text],input[type=date],select,textarea{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit}
+textarea{min-height:76px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus{outline:2px solid var(--focus);outline-offset:1px}
+.opts{display:grid;gap:6px}
+.opts label{display:flex;gap:8px;align-items:flex-start;font-weight:400;cursor:pointer}
+.opts input{margin-top:4px}
+fieldset{border:0;margin:18px 0 0;padding:0}
+legend{font-weight:700;font-size:1.05rem;color:var(--brand);padding:0;margin-bottom:2px;border-bottom:1px solid var(--line);width:100%;padding-bottom:4px}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:6px;font:inherit;cursor:pointer}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:600}
+.btn.danger{color:var(--danger)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fiche{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:8px;flex-wrap:wrap}
+.fiche .t{font-weight:600}
+.badge{font-size:.8rem;padding:2px 8px;border-radius:99px;background:var(--accent)}
+.badge.w{background:var(--warn);color:var(--warn-ink)}
+.badge.ok{background:var(--ok);color:var(--ok-ink)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+.err{color:var(--danger);font-size:.9rem}
+.small{font-size:.88rem;color:var(--muted)}
+.sticky{position:sticky;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 0;margin-top:16px}
+footer{max-width:960px;margin:0 auto;padding:8px 16px 32px;color:var(--muted);font-size:.85rem}
+a{color:var(--brand)}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <h1>Registre RGPD de votre structure</h1>
+  <p>FEMAS HDF · Registre des activités de traitement (art. 30 RGPD) · d'après le référentiel CNIL « cabinets médicaux et paramédicaux »</p>
+</div></header>
+<main>
+  <div class="notice"><strong>Confidentialité :</strong> vos réponses restent <strong>sur cet ordinateur</strong>.
+    Elles ne sont envoyées ni à FEMAS HDF ni à GitHub. Le registre est généré ici même, en fichier Excel.
+    Seuls le <em>nom</em> et le <em>type</em> de votre structure sont transmis à FEMAS HDF au moment du téléchargement,
+    pour suivre l'utilisation de l'outil. <strong>Ne saisissez aucune donnée de patient.</strong></div>
+
+  <section class="card">
+    <h2>1. Reprendre un registre existant (facultatif)</h2>
+    <p class="small">Pour mettre à jour un registre déjà téléchargé, importez le fichier Excel généré par cet outil.</p>
+    <div class="row">
+      <input type="file" id="importFile" accept=".xlsx" class="hidden">
+      <button class="btn" id="btnImport" type="button">📂 Importer mon registre Excel</button>
+      <span id="importMsg" class="small" role="status"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>2. Votre structure</h2>
+    <div id="structForm"></div>
+  </section>
+
+  <section class="card">
+    <h2>3. Vos activités de traitement</h2>
+    <p class="small">Une fiche par activité. Démarrez avec un modèle, puis complétez-le.</p>
+    <div id="fiches"></div>
+    <div class="row" id="presets"></div>
+  </section>
+
+  <section class="card hidden" id="editor">
+    <h2 id="editorTitle">Fiche</h2>
+    <div id="ficheForm"></div>
+    <div class="sticky row">
+      <button class="btn primary" type="button" id="btnSave">✔ Enregistrer la fiche</button>
+      <button class="btn" type="button" id="btnCancel">Annuler</button>
+      <span id="ficheErr" class="err" role="alert"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>4. Télécharger le registre</h2>
+    <p class="small">Le fichier Excel contient : <em>Synthèse</em>, <em>Registre</em> (une ligne par traitement) et
+      <em>Plan d'actions</em> (écarts au référentiel CNIL). Conservez-le : il pourra être présenté à la CNIL en cas de contrôle
+      et ré-importé ici pour le mettre à jour.</p>
+    <div class="row">
+      <button class="btn primary" type="button" id="btnDownload">⬇ Télécharger le registre Excel</button>
+      <button class="btn danger" type="button" id="btnClear">🗑 Effacer les données de ce navigateur</button>
+    </div>
+    <p id="dlMsg" class="small" role="status"></p>
+  </section>
+</main>
+<footer>
+  Outil proposé par FEMAS HDF. Sources : CNIL, <a href="https://www.cnil.fr/fr/rgpd-et-professionnels-de-sante-liberaux-ce-que-vous-devez-savoir" target="_blank" rel="noopener">RGPD et professionnels de santé libéraux</a>
+  · <a href="https://www.cnil.fr/sites/default/files/atoms/files/referentiel_-_cabinet.pdf" target="_blank" rel="noopener">Référentiel cabinets médicaux et paramédicaux</a>.
+  Brouillon enregistré uniquement dans ce navigateur ; utilisez « Effacer » sur un poste partagé.
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script>
+const SCHEMA = /*SCHEMA*/{"form": {"title": "FEMAS HDF – Registre RGPD : fiche d'activité de traitement", "issue_title_prefix": "[Registre] ", "labels": ["registre", "a-valider"], "intro": "## FEMAS HDF – Registre des activités de traitement (art. 30 RGPD)\n\nUne fiche = **une activité de traitement** de votre structure\n(ex. : dossier patient, prise de RDV, télétransmission, comptabilité,\ntélémédecine, coordination pluriprofessionnelle, gestion du personnel…).\n\n⚠️ **Ne saisissez AUCUNE donnée nominative de patient** : on décrit le\ntraitement, pas son contenu.\n\nLe questionnaire reprend les exigences du **référentiel CNIL « cabinets\nmédicaux et paramédicaux »**. Toute case de sécurité non cochée sera\nautomatiquement inscrite au **plan d'actions** du registre.\n\nRéférences : [CNIL – professionnels de santé libéraux](https://www.cnil.fr/fr/rgpd-et-professionnels-de-sante-liberaux-ce-que-vous-devez-savoir)\n· [Référentiel cabinets](https://www.cnil.fr/sites/default/files/atoms/files/referentiel_-_cabinet.pdf)\n· [Guide CNOM/CNIL](https://www.cnil.fr/sites/default/files/atoms/files/guide-cnom-cnil.pdf)\n"}, "fields": [{"type": "section", "label": "1. Identification de la structure et du traitement"}, {"id": "structure", "type": "input", "label": "Structure (nom de la MSP / du cabinet, ville)", "placeholder": "Ex. : MSP de … – Ville", "required": true}, {"id": "forme_juridique", "type": "dropdown", "label": "Type de structure", "options": ["Professionnel libéral en exercice individuel", "Cabinet de groupe (SCM / SEL / SCP)", "Maison de santé pluriprofessionnelle (SISA / association)", "Autre (préciser en commentaire)"], "required": true}, {"id": "responsable", "type": "input", "label": "Responsable du traitement (nom, qualité, coordonnées)", "description": "Le professionnel ou la structure qui décide des finalités et des moyens du traitement.", "required": true}, {"id": "referent", "type": "input", "label": "Référent RGPD / DPO (nom, interne ou externe, contact)", "placeholder": "Ex. : Dr X (référent interne) – ou DPO externe : cabinet Y, dpo@…", "required": true}, {"id": "redacteur", "type": "input", "label": "Personne ayant rempli la fiche (nom, fonction)", "required": true}, {"id": "date_maj", "type": "date", "label": "Date de création / dernière mise à jour de la fiche", "placeholder": "JJ/MM/AAAA", "required": true}, {"id": "nom_traitement", "type": "input", "label": "Nom de l'activité de traitement", "placeholder": "Ex. : Gestion des dossiers médicaux des patients", "required": true}, {"id": "outils", "type": "textarea", "label": "Outils / logiciels utilisés pour ce traitement", "placeholder": "Ex. : logiciel métier (éditeur, version), plateforme de RDV, messagerie MSSanté, dossiers papier…", "required": true}, {"type": "section", "label": "2. Finalités (référentiel §3)"}, {"id": "finalites", "type": "checkboxes", "label": "Finalité(s) poursuivie(s)", "description": "Les données de santé ne peuvent être utilisées que dans l'intérêt direct du patient ou de la gestion du cabinet.", "options": ["Gestion des rendez-vous", "Gestion des dossiers médicaux", "Tenue des dossiers nécessaires au suivi du patient (ex. dossier de soins infirmiers)", "Télémédecine / télésoin", "Communication et coordination entre professionnels et structures de soins", "Établissement et télétransmission des documents à l'assurance maladie (FSE, arrêts de travail, PSE…)", "Tenue de la comptabilité", "Études internes réalisées par l'équipe assurant le suivi (usage exclusif)", "Gestion du personnel / RH", "Autre finalité (préciser ci-dessous)"], "required": true}, {"id": "finalites_detail", "type": "textarea", "label": "Précisions sur les finalités", "description": "Toute recherche / étude hors équipe de soins nécessite des formalités spécifiques (art. 72 s. loi Informatique et Libertés).", "required": false}, {"type": "section", "label": "3. Base légale (référentiel §4)"}, {"id": "base_legale", "type": "checkboxes", "label": "Base(s) légale(s) retenue(s)", "description": "Repères CNIL : dossier médical, télétransmission AM, dossier de soins → obligation légale ; prise de RDV, comptabilité, télémédecine/télésoin → intérêt légitime.", "options": ["Obligation légale", "Intérêt légitime", "Mission d'intérêt public", "Exécution d'un contrat", "Consentement"], "required": true}, {"id": "base_legale_justif", "type": "textarea", "label": "Justification du choix de base légale (par finalité)", "placeholder": "Ex. : tenue du dossier médical → obligation légale (CSP) ; prise de RDV → intérêt légitime", "required": true}, {"id": "exception_art9", "type": "dropdown", "label": "Données de santé : exception à l'interdiction (art. 9 RGPD)", "description": "Pas de consentement à recueillir pour les données nécessaires au diagnostic et à la prise en charge (CNIL).", "options": ["Art. 9.2.h – diagnostics, prise en charge sanitaire ou sociale", "Art. 9.2.i – motifs d'intérêt public dans le domaine de la santé publique", "Art. 9.2.a – consentement explicite", "Sans objet – pas de données de santé"], "required": true}, {"type": "section", "label": "4. Personnes et données concernées (référentiel §5)"}, {"id": "personnes", "type": "checkboxes", "label": "Catégories de personnes concernées", "options": ["Patients", "Représentants légaux / aidants", "Professionnels de santé (membres, correspondants)", "Salariés / remplaçants / stagiaires", "Fournisseurs / prestataires"], "required": true}, {"id": "donnees", "type": "checkboxes", "label": "Catégories de données collectées", "description": "Principe de minimisation : ne collecter que les données pertinentes et nécessaires.", "options": ["a) Identité et coordonnées (nom, prénom, date de naissance, adresse, e-mail, téléphone)", "b) Identifiant national de santé (INS)", "c) Numéro de sécurité sociale (NIR) – facturation et prise en charge", "d) Situation familiale", "e) Situation professionnelle", "f) Données de santé (antécédents, diagnostics, traitements, résultats d'examens…)", "g) Habitudes de vie nécessaires au diagnostic et aux soins (avec accord du patient)", "h) Traces fonctionnelles et techniques (journaux)", "Données de facturation / paiement", "Données RH (salariés)"], "required": true}, {"id": "qualite_donnees", "type": "dropdown", "label": "Les données sont-elles tenues à jour (qualité des données) ?", "options": ["Oui – procédure de mise à jour en place", "Partiellement", "Non"], "required": true}, {"type": "section", "label": "5. Destinataires et accès (référentiel §6)"}, {"id": "destinataires", "type": "checkboxes", "label": "Destinataires / personnes ayant accès", "options": ["Professionnels de santé de l'équipe de soins (art. L.1110-4 et L.1110-12 CSP), y compris DMP / Mon espace santé", "Secrétariat – limité aux informations nécessaires à ses missions (RDV, gestion)", "Assurance maladie obligatoire (remboursement et contrôle – art. L.161-29 CSS)", "Organismes complémentaires (mutuelles)", "Organismes de recherche / d'évaluation des pratiques (conditions RGPD)", "Prestataire de maintenance (accès encadré, données chiffrées)", "Expert-comptable", "Autres (préciser dans les commentaires)"], "required": true}, {"id": "habilitations_secretariat", "type": "dropdown", "label": "Le secrétariat a-t-il un profil d'accès limité (sans accès au dossier médical complet) ?", "options": ["Oui", "Non – à corriger", "Sans objet (pas de secrétariat)"], "required": true}, {"type": "section", "label": "6. Sous-traitants et hébergement (référentiel §6, art. 28 RGPD)"}, {"id": "sous_traitants", "type": "textarea", "label": "Liste des sous-traitants", "description": "Pour chacun : nom, rôle (éditeur logiciel, hébergeur, plateforme de RDV, télésecrétariat, sauvegarde, maintenance…), lieu d'hébergement.", "placeholder": "Ex. : Éditeur X – logiciel métier en ligne – hébergé en France (HDS)", "required": true}, {"id": "hebergeur_hds", "type": "dropdown", "label": "Hébergement externalisé des données de santé", "description": "Tout logiciel hébergé à distance, plateforme de RDV, de télémédecine ou de sauvegarde doit être certifié HDS (art. L.1111-8 CSP).", "options": ["Oui – tous les hébergeurs sont certifiés HDS", "Au moins un hébergeur n'est PAS certifié HDS – à régulariser", "Pas d'hébergement externe (données uniquement au cabinet)", "Ne sais pas – à vérifier"], "required": true}, {"id": "plateforme_rdv", "type": "dropdown", "label": "Plateforme de prise de RDV en ligne : répartition des responsabilités formalisée ?", "options": ["Oui", "Non – à formaliser", "Sans objet"], "required": true}, {"id": "contrat_art28", "type": "checkboxes", "label": "Le(s) contrat(s) de sous-traitance prévoient que le prestataire…", "gap": true, "options": ["ne traite les données que sur instruction du responsable de traitement", "fait signer des engagements de confidentialité à son personnel", "prend toutes les mesures de sécurité requises", "ne recrute pas de sous-traitant sans autorisation écrite préalable", "coopère pour répondre aux demandes de droits des patients", "supprime ou restitue les données à la fin de la prestation", "met à disposition les informations permettant des audits", "notifie sans délai tout incident de sécurité (faille, piratage, perte)", "tient son propre registre de sous-traitant (art. 30.2)"], "required": false}, {"id": "transfert_hors_ue", "type": "dropdown", "label": "Des données sont-elles transférées ou hébergées hors Union européenne ?", "options": ["Non", "Oui – pays bénéficiant d'une décision d'adéquation", "Oui – clauses contractuelles types", "Ne sais pas – à vérifier"], "required": true}, {"id": "transfert_detail", "type": "input", "label": "Si transfert : pays, prestataire et garanties", "required": false}, {"type": "section", "label": "7. Durées de conservation (référentiel §7)"}, {"id": "conservation", "type": "checkboxes", "label": "Durées appliquées", "description": "Référentiel CNIL : 20 ans à compter de la dernière prise en charge = 5 ans en base active + 15 ans en archive sur support distinct ; doubles des FSE : 3 mois (art. R.161-47 CSS).", "gap": true, "options": ["Dossier patient : 5 ans en base active après la dernière intervention", "Puis archivage sur support distinct pendant 15 ans (sécurité équivalente)", "Doubles des feuilles de soins électroniques : 3 mois", "Suppression ou anonymisation à l'échéance (archivage automatique ou manuel)"], "required": false}, {"id": "conservation_autres", "type": "textarea", "label": "Autres durées / écarts justifiés", "placeholder": "Ex. : comptabilité – 10 ans ; agenda RDV – … ; justification de tout écart au référentiel", "required": false}, {"type": "section", "label": "8. Information et droits des personnes (référentiel §8 et §9)"}, {"id": "information", "type": "checkboxes", "label": "Modalités d'information des patients (art. 12 à 14 RGPD)", "options": ["Affichage dans les locaux / salle d'attente", "Dépliant remis au patient (notamment visites à domicile)", "Courriel de confirmation de RDV comportant l'information", "Mentions sur le site internet / la plateforme de RDV", "Note d'information aux salariés", "Aucune – à mettre en place"], "required": true}, {"id": "info_contenu", "type": "dropdown", "label": "L'information indique-t-elle les finalités, bases légales, destinataires, durées et modalités d'exercice des droits ?", "options": ["Oui, complète", "Partielle – à compléter", "Non"], "required": true}, {"id": "droits", "type": "checkboxes", "label": "Droits pris en charge par une procédure", "description": "Le droit d'opposition ne s'applique pas au dossier médical (obligation légale).", "gap": true, "options": ["Droit d'accès (dossier patient et autres données)", "Droit de rectification", "Droit à l'effacement (dans les conditions de l'art. 17)", "Droit à la limitation du traitement", "Droit d'opposition (hors dossier médical – art. 21)"], "required": false}, {"id": "droits_procedure", "type": "textarea", "label": "Procédure d'exercice des droits", "placeholder": "Ex. : demande écrite à l'accueil ou par mail à …, vérification d'identité, réponse sous 1 mois, registre des demandes", "required": true}, {"type": "section", "label": "9. Sécurité (référentiel §10 – mesures attendues du cabinet)"}, {"id": "sec_conformite_ans", "type": "dropdown", "label": "Les outils numériques utilisés sont-ils conformes aux référentiels de sécurité et d'interopérabilité de l'ANS (art. L.1110-4-1 CSP) ?", "options": ["Oui – vérifié auprès des éditeurs", "Non vérifié – à faire", "Non"], "required": true}, {"id": "sec_sensibiliser", "type": "checkboxes", "label": "Sensibiliser les utilisateurs", "gap": true, "options": ["Personnel informé et sensibilisé à la protection des données", "Charte informatique rédigée et rendue opposable (ressources mutualisées)"], "required": false}, {"id": "sec_authentifier", "type": "checkboxes", "label": "Authentifier les utilisateurs", "gap": true, "options": ["Identifiant propre à chaque utilisateur", "Politique de mots de passe conforme aux recommandations CNIL", "Authentification forte (CPS / e-CPS ou 2 facteurs) pour l'accès aux données de santé", "CPS strictement personnelle, code jamais communiqué au personnel"], "required": false}, {"id": "sec_habilitations", "type": "checkboxes", "label": "Gérer les habilitations et tracer", "gap": true, "options": ["Profils d'habilitation distinguant données administratives et médicales", "Suppression des permissions obsolètes (départs, changements de poste)", "Utilisateurs informés de la journalisation des accès", "Procédure de notification des violations de données (CNIL sous 72 h)"], "required": false}, {"id": "sec_postes", "type": "checkboxes", "label": "Sécuriser les postes de travail et l'informatique mobile", "gap": true, "options": ["Verrouillage automatique des sessions", "Antivirus régulièrement mis à jour", "Accord de l'utilisateur avant toute intervention sur son poste", "Stockage de données médicales sur tablette/smartphone limité, et sécurisé (chiffrement, code)", "Code de déverrouillage sur smartphones et tablettes", "Écrans protégés des regards (orientation, filtre)", "Supports amovibles limités et chiffrés", "Pas de prêt d'appareils professionnels"], "required": false}, {"id": "sec_reseau", "type": "checkboxes", "label": "Protéger le réseau et les serveurs", "gap": true, "options": ["Connexion d'appareils non professionnels au réseau limitée", "Wi-Fi sécurisé (WPA2 minimum), réseau invités séparé", "Accès distants via VPN", "Accès aux outils d'administration limité aux personnes habilitées", "Mises à jour critiques installées sans délai"], "required": false}, {"id": "sec_sauvegarde", "type": "checkboxes", "label": "Sauvegarder, archiver, maintenir", "gap": true, "options": ["Sauvegardes régulières", "Supports de sauvegarde stockés en lieu sûr", "Accès spécifique et restreint aux données archivées", "Destruction sécurisée des archives obsolètes", "Interventions de maintenance consignées dans une main courante", "Interventions de tiers encadrées par un responsable du cabinet", "Effacement des données avant mise au rebut du matériel"], "required": false}, {"id": "sec_soustraitance", "type": "checkboxes", "label": "Gérer la sous-traitance", "gap": true, "options": ["Clauses spécifiques de sécurité dans les contrats", "Conditions de restitution et de destruction des données prévues", "Effectivité des garanties vérifiée (audits, visites, attestations HDS…)"], "required": false}, {"id": "sec_echanges", "type": "checkboxes", "label": "Sécuriser les échanges avec les professionnels et les patients", "gap": true, "options": ["Vérification du bon destinataire avant envoi", "Messagerie sécurisée de santé (MSSanté) entre professionnels", "Chiffrement des pièces envoyées par messagerie standard, secret transmis par un autre canal", "Messagerie hébergée dans l'UE / conforme aux règles européennes", "Messageries instantanées utilisées avec précaution et de manière sécurisée"], "required": false}, {"id": "sec_locaux", "type": "checkboxes", "label": "Protéger les locaux et le papier", "gap": true, "options": ["Accès aux locaux restreint (portes verrouillées)", "Alarme anti-intrusion vérifiée périodiquement", "Dossiers papier dans des locaux ou armoires fermant à clé", "Impressions récupérées immédiatement / impression sécurisée", "Destruction des papiers au broyeur (classe 3 minimum)"], "required": false}, {"id": "sec_ecarts", "type": "textarea", "label": "Mesures non appliquées : justification d'équivalence ou de non-nécessité", "description": "Le référentiel demande de justifier toute mesure non mise en œuvre.", "required": false}, {"type": "section", "label": "10. AIPD et DPO (référentiel §11)"}, {"id": "si_partage", "type": "dropdown", "label": "Exercice en groupe avec un système d'information partagé ?", "options": ["Oui", "Non"], "required": true}, {"id": "volume_patients", "type": "dropdown", "label": "Nombre de patients distincts pris en charge par an (structure entière)", "description": "CNIL : AIPD et DPO nécessaires en cabinet groupé avec SI commun à partir de 10 000 patients/an.", "options": ["Moins de 10 000", "10 000 ou plus", "Ne sais pas"], "required": true}, {"id": "aipd", "type": "dropdown", "label": "Analyse d'impact (AIPD)", "options": ["Non requise", "Requise – réalisée", "Requise – en cours", "Requise – non réalisée"], "required": true}, {"id": "dpo_designe", "type": "dropdown", "label": "Délégué à la protection des données (DPO)", "options": ["Non requis", "Désigné (interne) et déclaré à la CNIL", "Désigné (externe / mutualisé) et déclaré à la CNIL", "Requis – non désigné"], "required": true}, {"type": "section", "label": "11. Validation"}, {"id": "commentaires", "type": "textarea", "label": "Commentaires / actions prévues", "required": false}, {"id": "attestation", "type": "checkboxes", "label": "Attestation", "each_required": true, "options": ["Je confirme n'avoir saisi aucune donnée nominative de patient", "Je certifie l'exactitude des informations déclarées"], "required": true}]}/*FIN_SCHEMA*/;
+const USAGE = /*USAGE*/{"formId": "262895568192373", "submitUrl": "https://eu-submit.jotform.com/submit/262895568192373/", "fields": {"structure": "q2_structure", "type": "q3_typestructure"}}/*FIN_USAGE*/;
+const STRUCT_IDS = ["structure","forme_juridique","responsable","referent"];
+const STORE_KEY = "femas-registre-rgpd-v1";
+const PRESETS = [
+  {nom:"Gestion des dossiers médicaux des patients", finalites:["Gestion des dossiers médicaux","Tenue des dossiers nécessaires au suivi du patient (ex. dossier de soins infirmiers)"], base_legale:["Obligation légale"], base_legale_justif:"Tenue du dossier médical : obligation légale (Code de la santé publique).", exception_art9:"Art. 9.2.h – diagnostics, prise en charge sanitaire ou sociale", personnes:["Patients"]},
+  {nom:"Prise de rendez-vous", finalites:["Gestion des rendez-vous"], base_legale:["Intérêt légitime"], base_legale_justif:"Prise de rendez-vous : intérêt légitime (référentiel CNIL).", personnes:["Patients"]},
+  {nom:"Télétransmission à l'assurance maladie", finalites:["Établissement et télétransmission des documents à l'assurance maladie (FSE, arrêts de travail, PSE…)"], base_legale:["Obligation légale"], base_legale_justif:"Télétransmission : obligation légale (référentiel CNIL).", exception_art9:"Art. 9.2.h – diagnostics, prise en charge sanitaire ou sociale", personnes:["Patients"]},
+  {nom:"Comptabilité", finalites:["Tenue de la comptabilité"], base_legale:["Intérêt légitime"], base_legale_justif:"Tenue de la comptabilité : intérêt légitime (référentiel CNIL).", personnes:["Patients","Fournisseurs / prestataires"]},
+  {nom:"Télémédecine / télésoin", finalites:["Télémédecine / télésoin"], base_legale:["Intérêt légitime"], base_legale_justif:"Télémédecine / télésoin : intérêt légitime (référentiel CNIL).", exception_art9:"Art. 9.2.h – diagnostics, prise en charge sanitaire ou sociale", personnes:["Patients"]},
+  {nom:"Coordination pluriprofessionnelle", finalites:["Communication et coordination entre professionnels et structures de soins"], exception_art9:"Art. 9.2.h – diagnostics, prise en charge sanitaire ou sociale", personnes:["Patients","Professionnels de santé (membres, correspondants)"]},
+  {nom:"Gestion du personnel", finalites:["Gestion du personnel / RH"], base_legale:["Exécution d'un contrat","Obligation légale"], exception_art9:"Sans objet – pas de données de santé", personnes:["Salariés / remplaçants / stagiaires"]},
+  {nom:"Autre activité", finalites:[]}
+];
+const TODO_WORDS = ["à régulariser","à corriger","à formaliser","à vérifier","non réalisée","non désigné","à faire","à compléter","à mettre en place","non vérifié","– en cours"];
+const PRIORITY_HIGH = new Set(["hebergeur_hds","sec_authentifier","sec_habilitations","aipd","dpo_designe","contrat_art28","transfert_hors_ue","sec_sauvegarde"]);
+
+const QUESTIONS = SCHEMA.fields.filter(f => f.type !== "section");
+let state = {structure:{}, fiches:[]};
+let editing = null; // index or -1 for new
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today = () => new Date().toLocaleDateString("fr-FR");
+
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }catch(e){} }
+function load(){ try{ const s = JSON.parse(localStorage.getItem(STORE_KEY)||"null"); if(s && s.fiches) state = s; }catch(e){} }
+
+// ---------- Rendu des champs ----------
+function fieldHTML(f, val, prefix){
+  const id = prefix + f.id;
+  const req = f.required ? ' <span class="req" aria-hidden="true">*</span>' : "";
+  let help = f.description ? `<p class="help">${esc(f.description)}</p>` : "";
+  if (f.gap) help += `<p class="help">Toute case non cochée sera inscrite au plan d'actions.</p>`;
+  if (f.type === "checkboxes"){
+    const vals = new Set(val || []);
+    return `<fieldset class="q-cb" data-id="${f.id}"><label class="q">${esc(f.label)}${req}</label>${help}<div class="opts">` +
+      f.options.map((o,i)=>`<label><input type="checkbox" name="${id}" value="${esc(o)}" ${vals.has(o)?"checked":""}> <span>${esc(o)}</span></label>`).join("") +
+      `</div></fieldset>`;
+  }
+  let input;
+  if (f.type === "dropdown"){
+    input = `<select id="${id}" data-id="${f.id}"><option value="">Choisir…</option>` +
+      f.options.map(o=>`<option ${o===val?"selected":""}>${esc(o)}</option>`).join("") + `</select>`;
+  } else if (f.type === "textarea"){
+    input = `<textarea id="${id}" data-id="${f.id}" placeholder="${esc(f.placeholder||"")}">${esc(val||"")}</textarea>`;
+  } else if (f.type === "date"){
+    const iso = val && /^\d{2}\/\d{2}\/\d{4}$/.test(val) ? val.split("/").reverse().join("-") : "";
+    input = `<input type="date" id="${id}" data-id="${f.id}" value="${iso}">`;
+  } else {
+    input = `<input type="text" id="${id}" data-id="${f.id}" value="${esc(val||"")}" placeholder="${esc(f.placeholder||"")}">`;
+  }
+  return `<label class="q" for="${id}">${esc(f.label)}${req}</label>${help}${input}`;
+}
+
+function readFields(container, ids){
+  const out = {};
+  for (const f of QUESTIONS.filter(q => ids.includes(q.id))){
+    if (f.type === "checkboxes"){
+      out[f.id] = [...container.querySelectorAll(`fieldset[data-id="${f.id}"] input:checked`)].map(i=>i.value);
+    } else {
+      const el = container.querySelector(`[data-id="${f.id}"]`);
+      let v = el ? el.value.trim() : "";
+      if (f.type === "date" && v) v = v.split("-").reverse().join("/");
+      out[f.id] = v;
+    }
+  }
+  return out;
+}
+
+function missing(values, ids){
+  const miss = [];
+  for (const f of QUESTIONS.filter(q => ids.includes(q.id) && q.required)){
+    const v = values[f.id];
+    if (f.type === "checkboxes"){
+      if (f.each_required ? (v||[]).length < f.options.length : !(v||[]).length) miss.push(f.label);
+    } else if (!v) miss.push(f.label);
+  }
+  return miss;
+}
+
+function renderStruct(){
+  $("#structForm").innerHTML = `<div class="grid2">` +
+    STRUCT_IDS.map(id => `<div>${fieldHTML(QUESTIONS.find(q=>q.id===id), state.structure[id], "s_")}</div>`).join("") + `</div>`;
+}
+["input","change"].forEach(ev => $("#structForm").addEventListener(ev, () => { state.structure = readFields($("#structForm"), STRUCT_IDS); save(); }));
+
+const FICHE_IDS = QUESTIONS.map(q=>q.id).filter(id => !STRUCT_IDS.includes(id));
+
+function renderFiches(){
+  const box = $("#fiches");
+  if (!state.fiches.length){ box.innerHTML = `<p class="small">Aucune fiche pour l'instant.</p>`; return; }
+  box.innerHTML = state.fiches.map((f,i)=>{
+    const miss = missing(f, FICHE_IDS).length;
+    const gaps = detectGaps(f).length;
+    return `<div class="fiche"><div><div class="t">${esc(f.nom_traitement || "(sans nom)")}</div>
+      <span class="badge ${miss?"w":"ok"}">${miss? miss+" champ(s) obligatoire(s) à compléter" : "Complète"}</span>
+      <span class="badge ${gaps?"w":""}">${gaps} écart(s)</span></div>
+      <div class="row"><button class="btn" data-act="edit" data-i="${i}" type="button">Modifier</button>
+      <button class="btn" data-act="dup" data-i="${i}" type="button">Dupliquer</button>
+      <button class="btn danger" data-act="del" data-i="${i}" type="button">Supprimer</button></div></div>`;
+  }).join("");
+}
+
+function renderPresets(){
+  $("#presets").innerHTML = `<span class="small">Ajouter :</span>` +
+    PRESETS.map((p,i)=>`<button class="btn" type="button" data-preset="${i}">＋ ${esc(p.nom)}</button>`).join("");
+}
+
+function openEditor(idx, values){
+  editing = idx;
+  let html = "";
+  for (const f of SCHEMA.fields){
+    if (f.type === "section"){
+      if (f.label.startsWith("1.")) { html += `<fieldset><legend>Identification du traitement</legend>`; continue; }
+      html += `</fieldset><fieldset><legend>${esc(f.label)}</legend>`; continue;
+    }
+    if (STRUCT_IDS.includes(f.id)) continue;
+    html += fieldHTML(f, values[f.id], "f_");
+  }
+  $("#ficheForm").innerHTML = html + `</fieldset>`;
+  $("#editorTitle").textContent = idx === -1 ? "Nouvelle fiche" : "Modifier la fiche";
+  $("#ficheErr").textContent = "";
+  $("#editor").classList.remove("hidden");
+  $("#editor").scrollIntoView({behavior:"smooth"});
+}
+
+function closeEditor(){ editing = null; $("#editor").classList.add("hidden"); }
+
+// ---------- Écarts (même logique que le registre GitHub) ----------
+function detectGaps(a){
+  const gaps = [];
+  for (const f of QUESTIONS){
+    const prio = PRIORITY_HIGH.has(f.id) ? "Haute" : "Normale";
+    const v = a[f.id];
+    if (f.type === "checkboxes" && f.gap){
+      for (const o of f.options) if (!(v||[]).includes(o)) gaps.push([prio, f.label, "Mettre en place : " + o]);
+    } else if (f.type === "dropdown" && typeof v === "string" && v){
+      const low = v.toLowerCase();
+      if ((TODO_WORDS.some(w => low.includes(w)) || low.startsWith("non –") || low === "non") && !["transfert_hors_ue","si_partage"].includes(f.id))
+        gaps.push([prio, f.label, `Réponse « ${v} » : action requise`]);
+    } else if (f.id === "information" && (v||[]).some(x => x.includes("Aucune"))){
+      gaps.push(["Haute", f.label, "Mettre en place l'information des patients"]);
+    }
+  }
+  if (a.si_partage === "Oui" && a.volume_patients === "10 000 ou plus"){
+    if ((a.aipd||"").startsWith("Non requise")) gaps.push(["Haute","AIPD","AIPD nécessaire (SI partagé, ≥ 10 000 patients/an)"]);
+    if ((a.dpo_designe||"").startsWith("Non requis")) gaps.push(["Haute","DPO","DPO nécessaire (SI partagé, ≥ 10 000 patients/an)"]);
+  }
+  if (a.volume_patients === "Ne sais pas") gaps.push(["Normale","AIPD / DPO","Évaluer la file active annuelle (seuil 10 000 patients)"]);
+  return gaps.sort((x,y)=>(x[0]!=="Haute")-(y[0]!=="Haute"));
+}
+
+// ---------- Export Excel ----------
+async function buildWorkbook(){
+  const wb = new ExcelJS.Workbook();
+  wb.creator = "FEMAS HDF – Registre RGPD"; wb.created = new Date();
+  const head = {type:"pattern", pattern:"solid", fgColor:{argb:"FF1F4E79"}};
+  const high = {type:"pattern", pattern:"solid", fgColor:{argb:"FFFCE4D6"}};
+  const border = {top:{style:"thin",color:{argb:"FFBFBFBF"}},left:{style:"thin",color:{argb:"FFBFBFBF"}},bottom:{style:"thin",color:{argb:"FFBFBFBF"}},right:{style:"thin",color:{argb:"FFBFBFBF"}}};
+  const s = state.structure;
+  const val = v => Array.isArray(v) ? v.map(x=>"• "+x).join("\n") : (v||"");
+
+  function sheet(name, title, headers, rows, widths){
+    const ws = wb.addWorksheet(name, {views:[{state:"frozen", ySplit:4}]});
+    ws.getCell("A1").value = title; ws.getCell("A1").font = {bold:true, size:14, color:{argb:"FF1F4E79"}};
+    ws.getCell("A2").value = `${s.structure||""} – Registre des activités de traitement (art. 30 RGPD) – édité le ${today()}`;
+    ws.getCell("A2").font = {italic:true, color:{argb:"FF595959"}};
+    const h = ws.getRow(4); h.values = headers;
+    h.eachCell(c => { c.fill = head; c.font = {bold:true, color:{argb:"FFFFFFFF"}}; c.border = border; c.alignment = {wrapText:true, vertical:"middle"}; });
+    rows.forEach(r => { const row = ws.addRow(r); row.eachCell({includeEmpty:true}, c => { c.border = border; c.alignment = {wrapText:true, vertical:"top"}; }); });
+    widths.forEach((w,i) => ws.getColumn(i+1).width = w);
+    if (rows.length) ws.autoFilter = {from:{row:4,column:1}, to:{row:4+rows.length, column:headers.length}};
+    return ws;
+  }
+
+  sheet("Synthèse", "Registre RGPD – Synthèse",
+    ["N°","Traitement","Statut","Nb écarts","Dont priorité haute","Mise à jour"],
+    state.fiches.map((f,i)=>{ const g = detectGaps({...s,...f}); return [i+1, f.nom_traitement||"", missing(f,FICHE_IDS).length?"Incomplète":"Complète", g.length, g.filter(x=>x[0]==="Haute").length, f.date_maj||""]; }),
+    [6,45,14,12,14,14]);
+  const info = wb.getWorksheet("Synthèse");
+  const r0 = 6 + state.fiches.length;
+  [["Structure", s.structure], ["Type de structure", s.forme_juridique], ["Responsable du traitement", s.responsable], ["Référent RGPD / DPO", s.referent]]
+    .forEach(([k,v],i) => { info.getCell(r0+i,1).value = k; info.getCell(r0+i,1).font = {bold:true}; info.getCell(r0+i,2).value = v||""; });
+
+  sheet("Registre", "Fiches de traitement", ["N°"].concat(QUESTIONS.map(q=>q.label)),
+    state.fiches.map((f,i)=>[i+1].concat(QUESTIONS.map(q => val(STRUCT_IDS.includes(q.id) ? s[q.id] : f[q.id])))),
+    [6].concat(QUESTIONS.map(q => ["checkboxes","textarea"].includes(q.type) ? 45 : 28)));
+
+  const rows = [];
+  state.fiches.forEach((f,i) => detectGaps({...s,...f}).forEach(g => rows.push([i+1, f.nom_traitement||"", g[0], g[1], g[2], "", "", ""])));
+  const pa = sheet("Plan d'actions", "Plan d'actions – écarts au référentiel CNIL",
+    ["N°","Traitement","Priorité","Thème","Action","Responsable","Échéance","Fait le"], rows, [6,30,10,32,60,18,12,12]);
+  rows.forEach((r,i) => { if (r[2] === "Haute") pa.getRow(5+i).eachCell({includeEmpty:true}, c => c.fill = high); });
+
+  // Données pour ré-import (feuille masquée)
+  const data = wb.addWorksheet("_donnees", {state:"veryHidden"});
+  const json = JSON.stringify({v:1, ...state});
+  for (let i = 0, r = 1; i < json.length; i += 30000, r++) data.getCell(r,1).value = json.slice(i, i+30000);
+  return wb;
+}
+
+async function download(){
+  state.structure = readFields($("#structForm"), STRUCT_IDS);
+  const msg = $("#dlMsg");
+  const sMiss = missing(state.structure, STRUCT_IDS);
+  if (sMiss.length){ msg.innerHTML = `<span class="err">Complétez d'abord « Votre structure » : ${esc(sMiss.join(", "))}.</span>`; return; }
+  if (!state.fiches.length){ msg.innerHTML = `<span class="err">Ajoutez au moins une fiche de traitement.</span>`; return; }
+  const inc = state.fiches.filter(f => missing(f, FICHE_IDS).length);
+  if (inc.length && !confirm(`${inc.length} fiche(s) incomplète(s). Télécharger quand même ?`)) return;
+  if (typeof ExcelJS === "undefined"){ msg.innerHTML = `<span class="err">La bibliothèque Excel n'a pas pu se charger (connexion internet requise).</span>`; return; }
+  const wb = await buildWorkbook();
+  const buf = await wb.xlsx.writeBuffer();
+  const slug = (state.structure.structure||"structure").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9]+/gi,"-").replace(/^-|-$/g,"").toLowerCase();
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([buf], {type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}));
+  a.download = `registre-rgpd-${slug}-${new Date().toISOString().slice(0,10)}.xlsx`;
+  document.body.appendChild(a); a.click(); a.remove();
+  msg.textContent = "Registre téléchargé. Conservez-le précieusement ; vous pourrez le ré-importer pour le mettre à jour.";
+  pingUsage();
+}
+
+function pingUsage(){
+  // Suivi d'utilisation : uniquement le nom et le type de la structure (aucune donnée du registre).
+  try{
+    const b = new URLSearchParams({formID: USAGE.formId, simple_spc: USAGE.formId + "-" + USAGE.formId});
+    b.set(USAGE.fields.structure, state.structure.structure || "");
+    b.set(USAGE.fields.type, state.structure.forme_juridique || "");
+    fetch(USAGE.submitUrl, {method:"POST", mode:"no-cors", body:b}).catch(()=>{});
+  }catch(e){}
+}
+
+async function importXlsx(file){
+  const msg = $("#importMsg");
+  try{
+    const wb = new ExcelJS.Workbook();
+    await wb.xlsx.load(await file.arrayBuffer());
+    const ws = wb.getWorksheet("_donnees");
+    if (!ws) throw new Error("Ce fichier n'a pas été généré par cet outil.");
+    let json = ""; ws.eachRow(r => { json += r.getCell(1).value || ""; });
+    const d = JSON.parse(json);
+    if (!d.fiches) throw new Error("Données illisibles.");
+    if (state.fiches.length && !confirm("Remplacer les fiches en cours par celles du fichier importé ?")) return;
+    state = {structure: d.structure || {}, fiches: d.fiches};
+    save(); renderStruct(); renderFiches(); closeEditor();
+    msg.textContent = `✔ ${d.fiches.length} fiche(s) importée(s).`;
+  }catch(e){ msg.innerHTML = `<span class="err">${esc(e.message)}</span>`; }
+}
+
+// ---------- Événements ----------
+document.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.preset !== undefined){
+    const p = PRESETS[+b.dataset.preset];
+    const v = {date_maj: today(), nom_traitement: p.nom === "Autre activité" ? "" : p.nom};
+    for (const k of Object.keys(p)) if (k !== "nom") v[k] = p[k];
+    openEditor(-1, v);
+  } else if (b.dataset.act === "edit"){ openEditor(+b.dataset.i, state.fiches[+b.dataset.i]); }
+  else if (b.dataset.act === "dup"){ const c = JSON.parse(JSON.stringify(state.fiches[+b.dataset.i])); c.nom_traitement += " (copie)"; state.fiches.push(c); save(); renderFiches(); }
+  else if (b.dataset.act === "del"){ if (confirm("Supprimer cette fiche ?")){ state.fiches.splice(+b.dataset.i,1); save(); renderFiches(); } }
+});
+$("#btnSave").addEventListener("click", () => {
+  const v = readFields($("#ficheForm"), FICHE_IDS);
+  const miss = missing(v, FICHE_IDS);
+  if (editing === -1) state.fiches.push(v); else state.fiches[editing] = v;
+  save(); renderFiches(); closeEditor();
+  if (miss.length) $("#dlMsg").textContent = `Fiche enregistrée, mais ${miss.length} champ(s) obligatoire(s) restent à compléter.`;
+  $("#fiches").scrollIntoView({behavior:"smooth"});
+});
+$("#btnCancel").addEventListener("click", closeEditor);
+$("#btnDownload").addEventListener("click", download);
+$("#btnImport").addEventListener("click", () => $("#importFile").click());
+$("#importFile").addEventListener("change", e => { if (e.target.files[0]) importXlsx(e.target.files[0]); e.target.value = ""; });
+$("#btnClear").addEventListener("click", () => {
+  if (!confirm("Effacer toutes les fiches enregistrées dans ce navigateur ? (Pensez à télécharger votre registre avant.)")) return;
+  try{ localStorage.removeItem(STORE_KEY); }catch(e){}
+  state = {structure:{}, fiches:[]}; renderStruct(); renderFiches(); closeEditor();
+  $("#dlMsg").textContent = "Données effacées de ce navigateur.";
+});
+
+load(); renderStruct(); renderFiches(); renderPresets();
+</script>
+</body>
+</html>
