@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
-  - name: "📝 Remplir la fiche via Jotform (sans compte GitHub)"
+  - name: "📝 Sans compte GitHub : fiche via le formulaire FEMAS HDF (Jotform)"
     url: https://eu.jotform.com/262895989918386
-    about: "Pour les équipes sans compte GitHub : les réponses sont importées automatiquement dans le registre."
+    about: "La fiche est transmise à FEMAS HDF, qui l'intègre au registre de votre structure."
   - name: "📘 CNIL – RGPD et professionnels de santé libéraux"
     url: https://www.cnil.fr/fr/rgpd-et-professionnels-de-sante-liberaux-ce-que-vous-devez-savoir
     about: "Ce que vous devez savoir (CNIL)."
