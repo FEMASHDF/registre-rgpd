@@ -9,6 +9,27 @@ Le questionnaire reprend les obligations décrites par la CNIL :
 [RGPD et professionnels de santé libéraux](https://www.cnil.fr/fr/rgpd-et-professionnels-de-sante-liberaux-ce-que-vous-devez-savoir)
 et le [référentiel « cabinets médicaux et paramédicaux »](https://www.cnil.fr/sites/default/files/atoms/files/referentiel_-_cabinet.pdf).
 
+## 👉 Pour les MSP : créer votre registre en 3 minutes
+
+Ce dépôt est un **modèle**. Chaque structure crée **son propre dépôt privé** : ses fiches
+et son registre ne sont visibles que par elle (et par FEMAS HDF si elle l'invite).
+
+1. Connectez-vous à GitHub (compte gratuit), puis cliquez sur **Use this template → Create a new repository**.
+2. Nom : `registre-rgpd-<nom-de-la-msp>` · Visibilité : **Private** · **Create repository**.
+3. Dans votre nouveau dépôt, onglet **Actions** : si un bandeau le demande, cliquez sur
+   *I understand my workflows, go ahead and enable them*, puis lancez une fois
+   **Compiler le registre RGPD → Run workflow** (crée les labels).
+4. **Remplir** : onglet **Issues → New issue → Registre RGPD – fiche de traitement**
+   (une fiche par activité de traitement). Invitez vos collègues : *Settings → Collaborators*.
+5. **Télécharger le registre** : dossier `registre/` → **`registre.xlsx`** → bouton de
+   téléchargement (↓). Le fichier Excel contient 3 onglets : *Synthèse*, *Registre*, *Plan d'actions*.
+   Il est régénéré automatiquement à chaque fiche créée ou modifiée.
+6. (Option) Pour être accompagné, invitez **FEMASHDF** en collaborateur.
+
+Valider une fiche : remplacer le label `a-valider` par `valide`. Retirer un traitement : label `archive`.
+
+---
+
 ## Fonctionnement
 
 ```
@@ -17,6 +38,7 @@ et le [référentiel « cabinets médicaux et paramédicaux »](https://www.cnil
  Équipe sans compte GitHub ──► Formulaire Jotform ──(import ──┘        │
                                 horaire, Action)                       ▼
                                           Action « Compiler le registre »
+                                          ► registre/registre.xlsx (Excel)
                                           ► registre/REGISTRE.md
                                           ► registre/registre.csv
                                           ► registre/plan_actions.csv
@@ -44,7 +66,7 @@ et le [référentiel « cabinets médicaux et paramédicaux »](https://www.cnil
 | §10 Sécurité | 9. ~40 mesures en 9 catégories + conformité ANS (L.1110-4-1 CSP) + justification des écarts |
 | §11 AIPD / DPO | 10. SI partagé, seuil 10 000 patients, AIPD, DPO |
 
-## Mise en place (≈ 20 min)
+## Mise en place côté FEMAS HDF (dépôt modèle + Jotform)
 
 1. **Dépôt GitHub** : `FEMASHDF/registre-rgpd` (déjà créé).
    Dans *Settings → General → Features*, vérifier que *Issues* est activé.
@@ -63,7 +85,7 @@ et le [référentiel « cabinets médicaux et paramédicaux »](https://www.cnil
    * Secret `JOTFORM_API_KEY` = la clé API (une clé *Read Access* suffit ici)
    * Variable `JOTFORM_FORM_ID` = l'ID du formulaire
    * (option) Variable `JOTFORM_API_BASE` si compte non UE : `https://api.jotform.com`
-5. Dans `.github/ISSUE_TEMPLATE/config.yml`, remplacer `REMPLACER_PAR_ID_FORMULAIRE` par l'ID Jotform.
+5. Formulaire Jotform créé : https://eu.jotform.com/262895989918386 (ID `262895989918386`), déjà relié dans `config.yml`.
 6. Lancer manuellement les Actions *Import Jotform -> issues* puis *Compiler le registre RGPD*
    pour vérifier.
 
@@ -73,8 +95,8 @@ et le [référentiel « cabinets médicaux et paramédicaux »](https://www.cnil
 * **Valider** : le référent RGPD relit la fiche, puis remplace le label `a-valider` par `valide`.
 * **Mettre à jour** : modifier l'issue (le registre se recompile) ; mettre à jour la date de la fiche.
 * **Retirer** un traitement qui n'existe plus : label `archive`.
-* **Consulter / exporter** : `registre/REGISTRE.md` (présentable à la CNIL en cas de contrôle),
-  `registre/registre.csv` et `registre/plan_actions.csv` (ouvrables dans Excel).
+* **Consulter / exporter** : `registre/registre.xlsx` (Excel mis en forme, présentable à la CNIL),
+  `registre/REGISTRE.md`, `registre/registre.csv` et `registre/plan_actions.csv`.
 
 ## Modifier le questionnaire
 
@@ -89,9 +111,8 @@ Une Action vérifie que le formulaire GitHub est bien à jour du schéma.
 
 * **Aucune donnée de patient** ne doit être saisie (une attestation est demandée) :
   le registre décrit les traitements, pas leur contenu.
-* Le dépôt est **public** : toute fiche déposée en issue (noms des responsables, mesures de sécurité
-  manquantes, plan d'actions) est visible de tous. Recommandé : passer le dépôt en **privé** avant
-  l'ouverture aux équipes, ou ne collecter que via Jotform. Double authentification activée.
+* Le **modèle** `FEMASHDF/registre-rgpd` est public mais ne doit contenir **aucune fiche** :
+  chaque MSP remplit son registre dans **son dépôt privé**. Double authentification recommandée.
 * Jotform : compte hébergé UE, accès restreint, suppression des soumissions après import si souhaité.
 * Le registre contient des noms de professionnels (responsables, rédacteurs) : GitHub et
   Jotform sont alors sous-traitants de FEMAS HDF / des structures — à inscrire dans le registre.
@@ -103,7 +124,7 @@ schema/registre.yml                       source unique des questions
 scripts/generate_issue_form.py            schéma -> Issue Form GitHub
 scripts/jotform_create_form.py            schéma -> formulaire Jotform (API)
 scripts/jotform_sync.py                   réponses Jotform -> issues GitHub
-scripts/build_registre.py                 issues -> registre + plan d'actions
+scripts/build_registre.py                 issues -> registre (Excel, MD, CSV) + plan d'actions
 .github/ISSUE_TEMPLATE/01-registre-traitement.yml   (généré)
 .github/ISSUE_TEMPLATE/02-violation-donnees.yml
 .github/ISSUE_TEMPLATE/config.yml
