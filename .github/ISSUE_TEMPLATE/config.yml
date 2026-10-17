@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: "📝 Remplir la fiche via Jotform (sans compte GitHub)"
-    url: https://form.jotform.com/REMPLACER_PAR_ID_FORMULAIRE
+    url: https://eu.jotform.com/262895989918386
     about: "Pour les équipes sans compte GitHub : les réponses sont importées automatiquement dans le registre."
   - name: "📘 CNIL – RGPD et professionnels de santé libéraux"
     url: https://www.cnil.fr/fr/rgpd-et-professionnels-de-sante-liberaux-ce-que-vous-devez-savoir
