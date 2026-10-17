@@ -4,6 +4,7 @@ Sorties (dossier registre/) :
     REGISTRE.md        registre lisible (synthèse + fiches + plan d'actions)
     registre.csv       une ligne par activité de traitement
     plan_actions.csv   écarts détectés vs référentiel CNIL
+    registre.xlsx      export Excel (Synthèse, Registre, Plan d'actions)
 
 Statut d'une fiche selon ses labels : "valide" -> Validée, sinon "À valider".
 Les issues portant le label "archive" sont exclues.
@@ -31,12 +32,84 @@ PRIORITY_HIGH = {"hebergeur_hds", "sec_authentifier", "sec_habilitations", "aipd
 
 def load_issues() -> list[dict]:
     if len(sys.argv) > 1:
-        return json.loads(open(sys.argv[1], encoding="utf-8").read())
-    out = subprocess.run(["gh", "issue", "list", "--label", "registre", "--state", "all",
-                          "--limit", "2000", "--json",
-                          "number,title,body,state,labels,url,updatedAt"],
-                         check=True, capture_output=True, text=True).stdout
-    return json.loads(out)
+        out = open(sys.argv[1], encoding="utf-8").read()
+    else:
+        out = subprocess.run(["gh", "issue", "list", "--state", "all",
+                              "--limit", "2000", "--json",
+                              "number,title,body,state,labels,url,updatedAt"],
+                             check=True, capture_output=True, text=True).stdout
+    # Fiche = label « registre » OU titre « [Registre] » (si les labels n'existaient pas encore)
+    return [i for i in json.loads(out)
+            if any(lab["name"] == "registre" for lab in i.get("labels", []))
+            or (i.get("title") or "").startswith("[Registre]")]
+
+
+def write_xlsx(path, schema: dict, fiches: list[dict], today: str) -> None:
+    """Export Excel mis en forme : Synthèse, Registre (1 ligne / traitement), Plan d'actions."""
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    from openpyxl.utils import get_column_letter
+
+    qs = questions(schema)
+    head_fill = PatternFill("solid", fgColor="1F4E79")
+    head_font = Font(bold=True, color="FFFFFF")
+    thin = Side(style="thin", color="BFBFBF")
+    border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    wrap = Alignment(wrap_text=True, vertical="top")
+    high_fill = PatternFill("solid", fgColor="FCE4D6")
+
+    def table(ws, start_row, headers, rows, widths):
+        for c, h in enumerate(headers, 1):
+            cell = ws.cell(row=start_row, column=c, value=h)
+            cell.fill, cell.font, cell.border = head_fill, head_font, border
+            cell.alignment = Alignment(wrap_text=True, vertical="center")
+        for r, row in enumerate(rows, start_row + 1):
+            for c, v in enumerate(row, 1):
+                cell = ws.cell(row=r, column=c, value=v)
+                cell.alignment, cell.border = wrap, border
+        for c, w in enumerate(widths, 1):
+            ws.column_dimensions[get_column_letter(c)].width = w
+        ws.freeze_panes = ws.cell(row=start_row + 1, column=1)
+        if rows:
+            ws.auto_filter.ref = f"A{start_row}:{get_column_letter(len(headers))}{start_row + len(rows)}"
+
+    def title(ws, text):
+        ws["A1"] = text
+        ws["A1"].font = Font(bold=True, size=14, color="1F4E79")
+        ws["A2"] = f"Registre des activités de traitement (art. 30 RGPD) – généré le {today}"
+        ws["A2"].font = Font(italic=True, color="595959")
+
+    def val(v):
+        return "\n".join(f"• {x}" for x in v) if isinstance(v, list) else (v or "")
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Synthèse"
+    title(ws, "FEMAS HDF – Registre RGPD")
+    table(ws, 4, ["N°", "Structure", "Traitement", "Responsable", "Statut", "Nb écarts", "Dont priorité haute", "Mise à jour", "Lien"],
+          [[x["issue"]["number"], x["ans"].get("structure", ""), x["ans"].get("nom_traitement", ""),
+            x["ans"].get("responsable", ""), x["statut"], len(x["gaps"]),
+            sum(1 for g in x["gaps"] if g[0] == "Haute"), x["ans"].get("date_maj", ""), x["issue"]["url"]]
+           for x in fiches], [6, 28, 34, 30, 12, 10, 12, 14, 40])
+
+    ws = wb.create_sheet("Registre")
+    title(ws, "Fiches de traitement")
+    table(ws, 4, ["N°", "Statut"] + [f["label"] for f in qs],
+          [[x["issue"]["number"], x["statut"]] + [val(x["ans"].get(f["id"])) for f in qs] for x in fiches],
+          [6, 12] + [45 if f["type"] in ("checkboxes", "textarea") else 28 for f in qs])
+
+    ws = wb.create_sheet("Plan d'actions")
+    title(ws, "Plan d'actions – écarts au référentiel CNIL")
+    rows = [[x["issue"]["number"], x["ans"].get("structure", ""), x["ans"].get("nom_traitement", ""),
+             p, t, a, "", "", ""]
+            for x in fiches for p, t, a in sorted(x["gaps"], key=lambda g: g[0] != "Haute")]
+    table(ws, 4, ["N°", "Structure", "Traitement", "Priorité", "Thème", "Action", "Responsable", "Échéance", "Fait le"],
+          rows, [6, 24, 28, 10, 32, 60, 18, 12, 12])
+    for r in range(5, 5 + len(rows)):
+        if ws.cell(row=r, column=4).value == "Haute":
+            for c in range(1, 10):
+                ws.cell(row=r, column=c).fill = high_fill
+    wb.save(path)
 
 
 def detect_gaps(schema: dict, ans: dict) -> list[tuple[str, str, str]]:
@@ -162,6 +235,7 @@ def main() -> None:
         md.append("Aucun écart détecté.")
 
     (OUT_DIR / "REGISTRE.md").write_text("\n".join(md) + "\n", encoding="utf-8")
+    write_xlsx(OUT_DIR / "registre.xlsx", schema, fiches, today)
     print(f"{len(fiches)} fiche(s) compilée(s), "
           f"{sum(len(x['gaps']) for x in fiches)} action(s) au plan.")
 
