@@ -1,0 +1,542 @@
+# FICHIER GÉNÉRÉ – modifier schema/registre.yml puis relancer scripts/generate_issue_form.py
+name: Registre RGPD – fiche de traitement
+description: 'FEMAS HDF – Registre RGPD : fiche d''activité de traitement'
+title: '[Registre] '
+labels:
+- registre
+- a-valider
+body:
+- type: markdown
+  attributes:
+    value: |
+      ## FEMAS HDF – Registre des activités de traitement (art. 30 RGPD)
+
+      Une fiche = **une activité de traitement** de votre structure
+      (ex. : dossier patient, prise de RDV, télétransmission, comptabilité,
+      télémédecine, coordination pluriprofessionnelle, gestion du personnel…).
+
+      ⚠️ **Ne saisissez AUCUNE donnée nominative de patient** : on décrit le
+      traitement, pas son contenu.
+
+      Le questionnaire reprend les exigences du **référentiel CNIL « cabinets
+      médicaux et paramédicaux »**. Toute case de sécurité non cochée sera
+      automatiquement inscrite au **plan d'actions** du registre.
+
+      Références : [CNIL – professionnels de santé libéraux](https://www.cnil.fr/fr/rgpd-et-professionnels-de-sante-liberaux-ce-que-vous-devez-savoir)
+      · [Référentiel cabinets](https://www.cnil.fr/sites/default/files/atoms/files/referentiel_-_cabinet.pdf)
+      · [Guide CNOM/CNIL](https://www.cnil.fr/sites/default/files/atoms/files/guide-cnom-cnil.pdf)
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 1. Identification de la structure et du traitement'
+- type: input
+  id: structure
+  attributes:
+    label: Structure (nom de la MSP / du cabinet, ville)
+    placeholder: 'Ex. : MSP de … – Ville'
+  validations:
+    required: true
+- type: dropdown
+  id: forme_juridique
+  attributes:
+    label: Type de structure
+    options:
+    - Professionnel libéral en exercice individuel
+    - Cabinet de groupe (SCM / SEL / SCP)
+    - Maison de santé pluriprofessionnelle (SISA / association)
+    - Autre (préciser en commentaire)
+  validations:
+    required: true
+- type: input
+  id: responsable
+  attributes:
+    label: Responsable du traitement (nom, qualité, coordonnées)
+    description: Le professionnel ou la structure qui décide des finalités et des moyens du traitement.
+  validations:
+    required: true
+- type: input
+  id: referent
+  attributes:
+    label: Référent RGPD / DPO (nom, interne ou externe, contact)
+    placeholder: 'Ex. : Dr X (référent interne) – ou DPO externe : cabinet Y, dpo@…'
+  validations:
+    required: true
+- type: input
+  id: redacteur
+  attributes:
+    label: Personne ayant rempli la fiche (nom, fonction)
+  validations:
+    required: true
+- type: input
+  id: date_maj
+  attributes:
+    label: Date de création / dernière mise à jour de la fiche
+    placeholder: JJ/MM/AAAA
+  validations:
+    required: true
+- type: input
+  id: nom_traitement
+  attributes:
+    label: Nom de l'activité de traitement
+    placeholder: 'Ex. : Gestion des dossiers médicaux des patients'
+  validations:
+    required: true
+- type: textarea
+  id: outils
+  attributes:
+    label: Outils / logiciels utilisés pour ce traitement
+    placeholder: 'Ex. : logiciel métier (éditeur, version), plateforme de RDV, messagerie MSSanté, dossiers papier…'
+  validations:
+    required: true
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 2. Finalités (référentiel §3)'
+- type: checkboxes
+  id: finalites
+  attributes:
+    label: Finalité(s) poursuivie(s)
+    description: Les données de santé ne peuvent être utilisées que dans l'intérêt direct du patient ou de la gestion du cabinet.
+    options:
+    - label: Gestion des rendez-vous
+    - label: Gestion des dossiers médicaux
+    - label: Tenue des dossiers nécessaires au suivi du patient (ex. dossier de soins infirmiers)
+    - label: Télémédecine / télésoin
+    - label: Communication et coordination entre professionnels et structures de soins
+    - label: Établissement et télétransmission des documents à l'assurance maladie (FSE, arrêts de travail, PSE…)
+    - label: Tenue de la comptabilité
+    - label: Études internes réalisées par l'équipe assurant le suivi (usage exclusif)
+    - label: Gestion du personnel / RH
+    - label: Autre finalité (préciser ci-dessous)
+- type: textarea
+  id: finalites_detail
+  attributes:
+    label: Précisions sur les finalités
+    description: Toute recherche / étude hors équipe de soins nécessite des formalités spécifiques (art. 72 s. loi Informatique et Libertés).
+  validations:
+    required: false
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 3. Base légale (référentiel §4)'
+- type: checkboxes
+  id: base_legale
+  attributes:
+    label: Base(s) légale(s) retenue(s)
+    description: 'Repères CNIL : dossier médical, télétransmission AM, dossier de soins → obligation légale ; prise de RDV, comptabilité, télémédecine/télésoin → intérêt légitime.'
+    options:
+    - label: Obligation légale
+    - label: Intérêt légitime
+    - label: Mission d'intérêt public
+    - label: Exécution d'un contrat
+    - label: Consentement
+- type: textarea
+  id: base_legale_justif
+  attributes:
+    label: Justification du choix de base légale (par finalité)
+    placeholder: 'Ex. : tenue du dossier médical → obligation légale (CSP) ; prise de RDV → intérêt légitime'
+  validations:
+    required: true
+- type: dropdown
+  id: exception_art9
+  attributes:
+    label: 'Données de santé : exception à l''interdiction (art. 9 RGPD)'
+    description: Pas de consentement à recueillir pour les données nécessaires au diagnostic et à la prise en charge (CNIL).
+    options:
+    - Art. 9.2.h – diagnostics, prise en charge sanitaire ou sociale
+    - Art. 9.2.i – motifs d'intérêt public dans le domaine de la santé publique
+    - Art. 9.2.a – consentement explicite
+    - Sans objet – pas de données de santé
+  validations:
+    required: true
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 4. Personnes et données concernées (référentiel §5)'
+- type: checkboxes
+  id: personnes
+  attributes:
+    label: Catégories de personnes concernées
+    options:
+    - label: Patients
+    - label: Représentants légaux / aidants
+    - label: Professionnels de santé (membres, correspondants)
+    - label: Salariés / remplaçants / stagiaires
+    - label: Fournisseurs / prestataires
+- type: checkboxes
+  id: donnees
+  attributes:
+    label: Catégories de données collectées
+    description: 'Principe de minimisation : ne collecter que les données pertinentes et nécessaires.'
+    options:
+    - label: a) Identité et coordonnées (nom, prénom, date de naissance, adresse, e-mail, téléphone)
+    - label: b) Identifiant national de santé (INS)
+    - label: c) Numéro de sécurité sociale (NIR) – facturation et prise en charge
+    - label: d) Situation familiale
+    - label: e) Situation professionnelle
+    - label: f) Données de santé (antécédents, diagnostics, traitements, résultats d'examens…)
+    - label: g) Habitudes de vie nécessaires au diagnostic et aux soins (avec accord du patient)
+    - label: h) Traces fonctionnelles et techniques (journaux)
+    - label: Données de facturation / paiement
+    - label: Données RH (salariés)
+- type: dropdown
+  id: qualite_donnees
+  attributes:
+    label: Les données sont-elles tenues à jour (qualité des données) ?
+    options:
+    - Oui – procédure de mise à jour en place
+    - Partiellement
+    - Non
+  validations:
+    required: true
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 5. Destinataires et accès (référentiel §6)'
+- type: checkboxes
+  id: destinataires
+  attributes:
+    label: Destinataires / personnes ayant accès
+    options:
+    - label: Professionnels de santé de l'équipe de soins (art. L.1110-4 et L.1110-12 CSP), y compris DMP / Mon espace santé
+    - label: Secrétariat – limité aux informations nécessaires à ses missions (RDV, gestion)
+    - label: Assurance maladie obligatoire (remboursement et contrôle – art. L.161-29 CSS)
+    - label: Organismes complémentaires (mutuelles)
+    - label: Organismes de recherche / d'évaluation des pratiques (conditions RGPD)
+    - label: Prestataire de maintenance (accès encadré, données chiffrées)
+    - label: Expert-comptable
+    - label: Autres (préciser dans les commentaires)
+- type: dropdown
+  id: habilitations_secretariat
+  attributes:
+    label: Le secrétariat a-t-il un profil d'accès limité (sans accès au dossier médical complet) ?
+    options:
+    - Oui
+    - Non – à corriger
+    - Sans objet (pas de secrétariat)
+  validations:
+    required: true
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 6. Sous-traitants et hébergement (référentiel §6, art. 28 RGPD)'
+- type: textarea
+  id: sous_traitants
+  attributes:
+    label: Liste des sous-traitants
+    description: 'Pour chacun : nom, rôle (éditeur logiciel, hébergeur, plateforme de RDV, télésecrétariat, sauvegarde, maintenance…), lieu d''hébergement.'
+    placeholder: 'Ex. : Éditeur X – logiciel métier en ligne – hébergé en France (HDS)'
+  validations:
+    required: true
+- type: dropdown
+  id: hebergeur_hds
+  attributes:
+    label: Hébergement externalisé des données de santé
+    description: Tout logiciel hébergé à distance, plateforme de RDV, de télémédecine ou de sauvegarde doit être certifié HDS (art. L.1111-8 CSP).
+    options:
+    - Oui – tous les hébergeurs sont certifiés HDS
+    - Au moins un hébergeur n'est PAS certifié HDS – à régulariser
+    - Pas d'hébergement externe (données uniquement au cabinet)
+    - Ne sais pas – à vérifier
+  validations:
+    required: true
+- type: dropdown
+  id: plateforme_rdv
+  attributes:
+    label: 'Plateforme de prise de RDV en ligne : répartition des responsabilités formalisée ?'
+    options:
+    - Oui
+    - Non – à formaliser
+    - Sans objet
+  validations:
+    required: true
+- type: checkboxes
+  id: contrat_art28
+  attributes:
+    label: Le(s) contrat(s) de sous-traitance prévoient que le prestataire…
+    options:
+    - label: ne traite les données que sur instruction du responsable de traitement
+    - label: fait signer des engagements de confidentialité à son personnel
+    - label: prend toutes les mesures de sécurité requises
+    - label: ne recrute pas de sous-traitant sans autorisation écrite préalable
+    - label: coopère pour répondre aux demandes de droits des patients
+    - label: supprime ou restitue les données à la fin de la prestation
+    - label: met à disposition les informations permettant des audits
+    - label: notifie sans délai tout incident de sécurité (faille, piratage, perte)
+    - label: tient son propre registre de sous-traitant (art. 30.2)
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: dropdown
+  id: transfert_hors_ue
+  attributes:
+    label: Des données sont-elles transférées ou hébergées hors Union européenne ?
+    options:
+    - Non
+    - Oui – pays bénéficiant d'une décision d'adéquation
+    - Oui – clauses contractuelles types
+    - Ne sais pas – à vérifier
+  validations:
+    required: true
+- type: input
+  id: transfert_detail
+  attributes:
+    label: 'Si transfert : pays, prestataire et garanties'
+  validations:
+    required: false
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 7. Durées de conservation (référentiel §7)'
+- type: checkboxes
+  id: conservation
+  attributes:
+    label: Durées appliquées
+    description: 'Référentiel CNIL : 20 ans à compter de la dernière prise en charge = 5 ans en base active + 15 ans en archive sur support distinct ; doubles des FSE : 3 mois (art. R.161-47 CSS). Toute case non cochée sera inscrite au plan d''actions.'
+    options:
+    - label: 'Dossier patient : 5 ans en base active après la dernière intervention'
+    - label: Puis archivage sur support distinct pendant 15 ans (sécurité équivalente)
+    - label: 'Doubles des feuilles de soins électroniques : 3 mois'
+    - label: Suppression ou anonymisation à l'échéance (archivage automatique ou manuel)
+- type: textarea
+  id: conservation_autres
+  attributes:
+    label: Autres durées / écarts justifiés
+    placeholder: 'Ex. : comptabilité – 10 ans ; agenda RDV – … ; justification de tout écart au référentiel'
+  validations:
+    required: false
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 8. Information et droits des personnes (référentiel §8 et §9)'
+- type: checkboxes
+  id: information
+  attributes:
+    label: Modalités d'information des patients (art. 12 à 14 RGPD)
+    options:
+    - label: Affichage dans les locaux / salle d'attente
+    - label: Dépliant remis au patient (notamment visites à domicile)
+    - label: Courriel de confirmation de RDV comportant l'information
+    - label: Mentions sur le site internet / la plateforme de RDV
+    - label: Note d'information aux salariés
+    - label: Aucune – à mettre en place
+- type: dropdown
+  id: info_contenu
+  attributes:
+    label: L'information indique-t-elle les finalités, bases légales, destinataires, durées et modalités d'exercice des droits ?
+    options:
+    - Oui, complète
+    - Partielle – à compléter
+    - Non
+  validations:
+    required: true
+- type: checkboxes
+  id: droits
+  attributes:
+    label: Droits pris en charge par une procédure
+    description: Le droit d'opposition ne s'applique pas au dossier médical (obligation légale). Toute case non cochée sera inscrite au plan d'actions.
+    options:
+    - label: Droit d'accès (dossier patient et autres données)
+    - label: Droit de rectification
+    - label: Droit à l'effacement (dans les conditions de l'art. 17)
+    - label: Droit à la limitation du traitement
+    - label: Droit d'opposition (hors dossier médical – art. 21)
+- type: textarea
+  id: droits_procedure
+  attributes:
+    label: Procédure d'exercice des droits
+    placeholder: 'Ex. : demande écrite à l''accueil ou par mail à …, vérification d''identité, réponse sous 1 mois, registre des demandes'
+  validations:
+    required: true
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 9. Sécurité (référentiel §10 – mesures attendues du cabinet)'
+- type: dropdown
+  id: sec_conformite_ans
+  attributes:
+    label: Les outils numériques utilisés sont-ils conformes aux référentiels de sécurité et d'interopérabilité de l'ANS (art. L.1110-4-1 CSP) ?
+    options:
+    - Oui – vérifié auprès des éditeurs
+    - Non vérifié – à faire
+    - Non
+  validations:
+    required: true
+- type: checkboxes
+  id: sec_sensibiliser
+  attributes:
+    label: Sensibiliser les utilisateurs
+    options:
+    - label: Personnel informé et sensibilisé à la protection des données
+    - label: Charte informatique rédigée et rendue opposable (ressources mutualisées)
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: checkboxes
+  id: sec_authentifier
+  attributes:
+    label: Authentifier les utilisateurs
+    options:
+    - label: Identifiant propre à chaque utilisateur
+    - label: Politique de mots de passe conforme aux recommandations CNIL
+    - label: Authentification forte (CPS / e-CPS ou 2 facteurs) pour l'accès aux données de santé
+    - label: CPS strictement personnelle, code jamais communiqué au personnel
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: checkboxes
+  id: sec_habilitations
+  attributes:
+    label: Gérer les habilitations et tracer
+    options:
+    - label: Profils d'habilitation distinguant données administratives et médicales
+    - label: Suppression des permissions obsolètes (départs, changements de poste)
+    - label: Utilisateurs informés de la journalisation des accès
+    - label: Procédure de notification des violations de données (CNIL sous 72 h)
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: checkboxes
+  id: sec_postes
+  attributes:
+    label: Sécuriser les postes de travail et l'informatique mobile
+    options:
+    - label: Verrouillage automatique des sessions
+    - label: Antivirus régulièrement mis à jour
+    - label: Accord de l'utilisateur avant toute intervention sur son poste
+    - label: Stockage de données médicales sur tablette/smartphone limité, et sécurisé (chiffrement, code)
+    - label: Code de déverrouillage sur smartphones et tablettes
+    - label: Écrans protégés des regards (orientation, filtre)
+    - label: Supports amovibles limités et chiffrés
+    - label: Pas de prêt d'appareils professionnels
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: checkboxes
+  id: sec_reseau
+  attributes:
+    label: Protéger le réseau et les serveurs
+    options:
+    - label: Connexion d'appareils non professionnels au réseau limitée
+    - label: Wi-Fi sécurisé (WPA2 minimum), réseau invités séparé
+    - label: Accès distants via VPN
+    - label: Accès aux outils d'administration limité aux personnes habilitées
+    - label: Mises à jour critiques installées sans délai
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: checkboxes
+  id: sec_sauvegarde
+  attributes:
+    label: Sauvegarder, archiver, maintenir
+    options:
+    - label: Sauvegardes régulières
+    - label: Supports de sauvegarde stockés en lieu sûr
+    - label: Accès spécifique et restreint aux données archivées
+    - label: Destruction sécurisée des archives obsolètes
+    - label: Interventions de maintenance consignées dans une main courante
+    - label: Interventions de tiers encadrées par un responsable du cabinet
+    - label: Effacement des données avant mise au rebut du matériel
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: checkboxes
+  id: sec_soustraitance
+  attributes:
+    label: Gérer la sous-traitance
+    options:
+    - label: Clauses spécifiques de sécurité dans les contrats
+    - label: Conditions de restitution et de destruction des données prévues
+    - label: Effectivité des garanties vérifiée (audits, visites, attestations HDS…)
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: checkboxes
+  id: sec_echanges
+  attributes:
+    label: Sécuriser les échanges avec les professionnels et les patients
+    options:
+    - label: Vérification du bon destinataire avant envoi
+    - label: Messagerie sécurisée de santé (MSSanté) entre professionnels
+    - label: Chiffrement des pièces envoyées par messagerie standard, secret transmis par un autre canal
+    - label: Messagerie hébergée dans l'UE / conforme aux règles européennes
+    - label: Messageries instantanées utilisées avec précaution et de manière sécurisée
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: checkboxes
+  id: sec_locaux
+  attributes:
+    label: Protéger les locaux et le papier
+    options:
+    - label: Accès aux locaux restreint (portes verrouillées)
+    - label: Alarme anti-intrusion vérifiée périodiquement
+    - label: Dossiers papier dans des locaux ou armoires fermant à clé
+    - label: Impressions récupérées immédiatement / impression sécurisée
+    - label: Destruction des papiers au broyeur (classe 3 minimum)
+    description: Toute case non cochée sera inscrite au plan d'actions.
+- type: textarea
+  id: sec_ecarts
+  attributes:
+    label: 'Mesures non appliquées : justification d''équivalence ou de non-nécessité'
+    description: Le référentiel demande de justifier toute mesure non mise en œuvre.
+  validations:
+    required: false
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 10. AIPD et DPO (référentiel §11)'
+- type: dropdown
+  id: si_partage
+  attributes:
+    label: Exercice en groupe avec un système d'information partagé ?
+    options:
+    - Oui
+    - Non
+  validations:
+    required: true
+- type: dropdown
+  id: volume_patients
+  attributes:
+    label: Nombre de patients distincts pris en charge par an (structure entière)
+    description: 'CNIL : AIPD et DPO nécessaires en cabinet groupé avec SI commun à partir de 10 000 patients/an.'
+    options:
+    - Moins de 10 000
+    - 10 000 ou plus
+    - Ne sais pas
+  validations:
+    required: true
+- type: dropdown
+  id: aipd
+  attributes:
+    label: Analyse d'impact (AIPD)
+    options:
+    - Non requise
+    - Requise – réalisée
+    - Requise – en cours
+    - Requise – non réalisée
+  validations:
+    required: true
+- type: dropdown
+  id: dpo_designe
+  attributes:
+    label: Délégué à la protection des données (DPO)
+    options:
+    - Non requis
+    - Désigné (interne) et déclaré à la CNIL
+    - Désigné (externe / mutualisé) et déclaré à la CNIL
+    - Requis – non désigné
+  validations:
+    required: true
+- type: markdown
+  attributes:
+    value: '---
+
+      ## 11. Validation'
+- type: textarea
+  id: commentaires
+  attributes:
+    label: Commentaires / actions prévues
+  validations:
+    required: false
+- type: checkboxes
+  id: attestation
+  attributes:
+    label: Attestation
+    options:
+    - label: Je confirme n'avoir saisi aucune donnée nominative de patient
+      required: true
+    - label: Je certifie l'exactitude des informations déclarées
+      required: true
