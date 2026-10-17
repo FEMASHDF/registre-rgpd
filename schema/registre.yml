@@ -54,6 +54,7 @@ fields:
       - "Professionnel libéral en exercice individuel"
       - "Cabinet de groupe (SCM / SEL / SCP)"
       - "Maison de santé pluriprofessionnelle (SISA / association)"
+      - "Communauté professionnelle territoriale de santé (CPTS)"
       - "Autre (préciser en commentaire)"
     required: true
 
