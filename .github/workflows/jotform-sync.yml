@@ -1,0 +1,24 @@
+name: Import Jotform -> issues
+on:
+  schedule:
+    - cron: "17 * * * *"     # toutes les heures
+  workflow_dispatch:
+permissions:
+  issues: write
+  contents: read
+concurrency: jotform-sync
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install -r requirements.txt
+      - name: Importer les nouvelles réponses
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT || github.token }}
+          JOTFORM_API_KEY: ${{ secrets.JOTFORM_API_KEY }}
+          JOTFORM_FORM_ID: ${{ vars.JOTFORM_FORM_ID }}
+          JOTFORM_API_BASE: ${{ vars.JOTFORM_API_BASE || 'https://eu-api.jotform.com' }}
+        run: python scripts/jotform_sync.py
