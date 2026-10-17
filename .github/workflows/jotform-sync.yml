@@ -9,6 +9,8 @@ permissions:
 concurrency: jotform-sync
 jobs:
   sync:
+    # Ne s'exécute que si le dépôt est relié à un formulaire Jotform (variable JOTFORM_FORM_ID)
+    if: ${{ vars.JOTFORM_FORM_ID != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
